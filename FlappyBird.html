@@ -1,0 +1,296 @@
+<html>
+<head>
+    <title>Flappy Bird</title>
+
+<style type="text/css">
+    @font-face {
+        font-family: 'FlappyBird';
+        src: url('fonts/FlappyBird.ttf');
+    }
+    #container {
+        background: url('images/background.png');
+        /* background-repeat: no-repeat; */
+		/* background-size: cover; */
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 10px #888888;
+		width: 450px;
+		height: 500px;
+		position: relative;
+		margin: auto;
+        margin-top: 40px;
+        overflow: hidden;
+    }
+    #flaptzy {
+        width: 38px;
+		height: 26px;
+		position:absolute;
+    }
+    .pipeTop {
+        background: url('images/pipeTop.png');
+        width: 55px;
+		height: 300px;
+		position:absolute;
+        background-repeat: no-repeat;
+    }
+    .pipeBottom {
+        background: url('images/pipeBottom.png');
+        width: 55px;
+		height: 300px;
+		position:absolute;
+        background-repeat: no-repeat;
+    }
+    #road {
+        background: url('images/road.png');
+        width: 480px;
+        height: 100px;
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+    }
+    .test{
+        border: 2px solid black;
+        width: 55px;
+		height: 300px;
+		position:absolute;
+    }
+    #gameOver {
+        font-family: 'FlappyBird';
+		visibility: hidden;
+		padding-top: 20px;
+		height: 80px;
+		width: 300px;
+		margin: auto;
+		/* border: 1px solid #ffffff;
+			background-color: #000000; */
+		position: absolute;
+		margin-top: 120px;
+		margin-left: 80px;
+		font-size: 60px;
+		color: #ffffff;
+		text-align: center;
+			}
+    #restart {
+        font-family: 'FlappyBird';
+        text-decoration: underline;
+        border: none;
+        font-size: 40px;
+        color: #ffffff;
+        background: none;
+    }
+    #game {
+        font-family: 'FlappyBird';
+		height: 80px;
+		width: 300px;
+        top: 200px;
+        left: 500px;
+		position: absolute;
+		font-size: 60px;
+		color: #ffffff;
+		text-align: center;
+        margin: auto;
+		}
+    #start {
+        font-family: 'FlappyBird';
+        border: none;
+        font-size: 40px;
+        color: #ffffff;
+        background: none;
+    }
+    #score {
+        font-family: 'FlappyBird';
+		height: 80px;
+		width: 300px;
+        top: 50px;
+        left: 500px;
+		position: absolute;
+		font-size: 50px;
+		color: #ffffff;
+		text-align: center;
+        margin: auto;
+    }
+</style>
+
+</head>
+<body>
+    <div id='container'>
+        <div id='flaptzy'></div>
+		<div id='pipeTop'></div>
+		<div id='pipeBottom'></div>
+        <div id='road'></div>
+        <div id="test"></div>
+        <div id="gameOver">Game Over!
+            <p id="restart">Try Again</p>
+        </div>
+	</div>
+    <div id="game">Flappy Bird
+        <p id="start">Press spacebar<br>to start</p>
+    </div>
+    <div id="score"></div>
+    <audio id="point">
+		<source src="sounds/point.mp3">
+	</audio>
+    <audio id="wing">
+		<source src="sounds/wing.mp3">
+	</audio>
+    <audio id="die">
+		<source src="sounds/die.mp3">
+	</audio>
+    <audio id="hit">
+		<source src="sounds/hit.mp3">
+	</audio>
+<script>
+    var flaptzy = {
+		x: 35,
+		y: 300
+        };
+
+        var pipeTop = [{x: 200, y: 0}, //-12mid
+                        {x: 400, y:-20},
+                        {x: 600, y: -80},
+                        {x: 800, y: -20},
+                        {x: 1000, y: -80},
+                        {x: 1200, y: -60}]
+
+        var pipeBottom = [{x: 200, y: -100}, //-12mid
+                        {x: 400, y: -80},
+                        {x: 600, y: -20},
+                        {x: 800, y: -80},
+                        {x: 1000, y: -20},
+                        {x: 1200, y: -40}]
+
+        var rotation = 1200;
+        var score = 0;
+        var start = 0;
+        var gameover = 1;
+        var point = document.getElementById('point');
+        var wing = document.getElementById('wing');
+        var die = document.getElementById('die');
+        var hit = document.getElementById('hit');
+
+
+    function displayFlaptzy() {
+		document.getElementById('flaptzy').style['top'] = flaptzy.y + "px";
+		document.getElementById('flaptzy').style['left'] = flaptzy.x + "px";
+        document.getElementById("flaptzy").style.backgroundImage = "url('images/flaptzy.png')";
+	}
+
+    function moveFlaptzy() {
+        if(flaptzy.y > 10 && flaptzy.y < 400) {
+            flaptzy.y += 10;
+        }
+    }
+
+    function displaypipeTop() {
+        var output = '';
+        for(var i=0; i<pipeTop.length; i++) {
+            output += "<div class='pipeTop' style='top:"+pipeTop[i].y+"px; left:"+pipeTop[i].x+";'></div>";
+		}
+		document.getElementById('pipeTop').innerHTML = output;
+    }
+
+    function movepipeTop() {
+		for(var i=0; i<pipeTop.length; i++) {
+            pipeTop[i].x -= 5;
+			if(pipeTop[i].x < 0) {
+                pipeTop[i].x = rotation;
+            }
+		}
+	}
+
+    function displaypipeBottom() {
+        var output = '';
+        for(var i=0; i<pipeBottom.length; i++) {
+            output += "<div class='pipeBottom' style='bottom:"+pipeBottom[i].y+"px; left:"+pipeBottom[i].x+";'></div>";
+		}
+		document.getElementById('pipeBottom').innerHTML = output;
+    }
+
+    function movepipeBottom() {
+		for(var i=0; i<pipeBottom.length; i++) {
+            pipeBottom[i].x -= 5;
+            if(pipeBottom[i].x < 0) {
+                pipeBottom[i].x = rotation;
+            }
+		}
+	}
+
+    function flappyDead() {
+        // var output = '';
+        for(var i = 0; i < pipeTop.length; i++){
+            // console.log('flaptzy ', flaptzy.x, 'pipeTop ', pipeTop[i]);
+            // output += "<div class='test' style='top:"+parseInt(pipeTop[i].y + 250)+"px; left:"+Math.abs(flaptzy.x - pipeTop[i].x)+";'></div>";
+            // output += "<div class='test' style='bottom:"+Math.abs(parseInt(pipeBottom[i].y - 200))+"px; left:"+Math.abs(flaptzy.x - pipeBottom[i].x)+";'></div>";
+            if((flaptzy.y < parseInt(pipeTop[i].y + 250) && Math.abs(flaptzy.x - pipeTop[i].x) < 35) || (flaptzy.y > Math.abs(parseInt(pipeBottom[i].y - 200)) && Math.abs(flaptzy.x - pipeBottom[i].x) < 35)) {
+                document.getElementById("flaptzy").style.transform = "rotate(90deg)";
+                if(flaptzy.y < 395) {
+                    flaptzy.y += 25;
+                }
+                clearInterval(pause);
+                document.getElementById('gameOver').style.visibility = 'visible';
+                if(gameover == 1) {
+                hit.play();
+                gameover = 0;
+                }
+            }
+            
+            if(flaptzy.x == pipeTop[i].x) {
+                score ++;
+                point.play();
+            }
+        }
+
+        if(flaptzy.y == 400 && start == 1) {
+            start = 0;
+            document.getElementById("flaptzy").style.transform = "rotate(90deg)";
+            clearInterval(pause);
+            document.getElementById('gameOver').style.visibility = 'visible';
+            die.play();
+        }
+        // document.getElementById('gameOver').innerHTML = output;
+    }
+
+    function flaptzyLoop() {
+        displayFlaptzy();
+        if(start == 1) {
+        moveFlaptzy();
+        displayScore();
+        flappyDead();
+        }
+    }
+
+    function pipesLoop() {
+        displaypipeTop();
+        displaypipeBottom();
+        if(start == 1) {
+        movepipeTop();    
+        movepipeBottom();
+        }
+    }
+
+    document.getElementById('restart').onclick = function() {
+        location.reload();
+    }
+
+    setInterval(flaptzyLoop, 100);
+    var pause = setInterval(pipesLoop, 120);
+
+    function displayScore() {
+		document.getElementById('score').innerHTML = score;
+	}
+
+    document.onkeydown = function(a) {
+		if(a.keyCode == 32 && flaptzy.y > 0 && flaptzy.y < 400 && start == 1) { //spacebar
+			flaptzy.y -= 40;
+            wing.play();
+			displayFlaptzy();
+		}else if(a.keyCode == 32 && start == 0) {
+            document.getElementById('game').style.visibility = 'hidden';
+            start++;
+        }
+	}
+
+</script>
+
+</body>
+</html>
